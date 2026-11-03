@@ -1,22 +1,26 @@
-// ITCS333 A3 starter — implement the to-do app per README.
-// You may wrap everything in a DOMContentLoaded handler or an IIFE.
-// Requirements: add / toggle-complete / delete / filter / counter,
-// using event delegation on #todo-list.
-
-// TODO: your code here
 document.addEventListener('DOMContentLoaded', function () {
-  
+    
   const form = document.querySelector('#todo-form');
   const input = document.querySelector('#todo-input');
   const errorMsg = document.querySelector('#error-msg');
   const list = document.querySelector('#todo-list');
   const counter = document.querySelector('#counter');
-  const filterButtons = document.querySelectorAll('.filters button');
-
+  const filterAll = document.querySelector('#filter-all');
+  const filterActive = document.querySelector('#filter-active');
+  const filterDone = document.querySelector('#filter-done');
 
   let currentFilter = 'all';
 
-  
+  form.addEventListener('submit', addTodo);
+  input.addEventListener('input', hideError);
+  list.addEventListener('click', handleListClick); 
+  filterAll.addEventListener('click', changeFilter);
+  filterActive.addEventListener('click', changeFilter);
+  filterDone.addEventListener('click', changeFilter);
+
+  updateView(); 
+
+
   function addTodo(e) {
     e.preventDefault(); 
 
@@ -49,13 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
     updateView();
   }
 
-
   function handleListClick(e) {
     const target = e.target; 
 
     if (target.classList.contains('delete-btn')) {
-
-       list.removeChild(target.parentNode);
+      list.removeChild(target.parentNode); 
     } else if (target.classList.contains('item-text')) {
       target.parentNode.classList.toggle('completed');
     } else {
@@ -64,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateView();
   }
-
 
   function changeFilter(e) {
     switch (e.target.id) {
@@ -80,17 +81,20 @@ document.addEventListener('DOMContentLoaded', function () {
     updateView();
   }
 
-
   function hideError(e) {
     errorMsg.classList.add('hidden');
   }
 
-
   function updateView() {
+    let left = 0;
+
     for (let li of list.children) {
       const isDone = li.classList.contains('completed');
       let show = true;
 
+      if (!isDone) {
+        left++;
+      }
       if (currentFilter == 'active' && isDone) {
         show = false;
       }
@@ -101,20 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
       li.style.display = show ? '' : 'none';
     }
 
-
-    const left = list.querySelectorAll('li:not(.completed)').length;
     counter.textContent = left == 1 ? `${left} item left` : `${left} items left`;
   }
-
-  form.addEventListener('submit', addTodo);
-  input.addEventListener('input', hideError);
-  list.addEventListener('click', handleListClick);
-
-  for (let btn of filterButtons) {
-    btn.addEventListener('click', changeFilter);
-  }
-
-  updateView();
 });
-
-// Testing GitHub connection
